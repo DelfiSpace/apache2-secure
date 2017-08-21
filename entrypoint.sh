@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cat <<EOF
-Welcome to the marvambass/apache2-ssl-secure container
+Welcome to the apache2-secure container
 
 If you want to add your own VirtualHosts Configuration, you can copy the following SSL Configuration Stuff
 
@@ -36,24 +36,10 @@ If you want to add your own VirtualHosts Configuration, you can copy the followi
 
 EOF
 
-if [ ! -z ${HSTS_HEADERS_ENABLE+x} ]
-then
-  echo ">> HSTS Headers enabled"
-  sed -i 's/#Header add Strict-Transport-Security/Header add Strict-Transport-Security/g' /etc/apache2/sites-enabled/001-default-ssl
-
-  if [ ! -z ${HSTS_HEADERS_ENABLE_NO_SUBDOMAINS+x} ]
-  then
-    echo ">> HSTS Headers configured without includeSubdomains"
-    sed -i 's/; includeSubdomains//g' /etc/apache2/sites-enabled/001-default-ssl
-  fi
-else
-  echo ">> HSTS Headers disabled"
-fi
-
 if [ ! -e "/etc/apache2/external/cert.pem" ] || [ ! -e "/etc/apache2/external/key.pem" ]
 then
   echo ">> generating self signed cert"
-  openssl req -x509 -newkey rsa:4086 \
+  openssl req -x509 -newkey rsa:4096 \
   -subj "/C=XX/ST=XXXX/L=XXXX/O=XXXX/CN=localhost" \
   -keyout "/etc/apache2/external/key.pem" \
   -out "/etc/apache2/external/cert.pem" \
